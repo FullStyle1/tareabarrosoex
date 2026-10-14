@@ -64,7 +64,7 @@ Copy-Item .env.example .env
 docker compose up --build
 ```
 
-La aplicación queda en `http://localhost:8080` y PostgreSQL en `localhost:5432`. Para detener los contenedores:
+La aplicación queda en `http://localhost:8080` y PostgreSQL en `localhost:5432`. Flyway crea la tabla `parcels` al iniciar. Para detener los contenedores:
 
 ```powershell
 docker compose down
@@ -76,7 +76,7 @@ Los datos de PostgreSQL persisten en el volumen `postgres_data`. Para eliminar t
 docker compose down --volumes
 ```
 
-## Ejecutar y probar solo el backend
+## Ejecutar y probar
 
 Requiere PostgreSQL local disponible con los parámetros de `.env.example` o las variables `DB_URL`, `DB_USERNAME` y `DB_PASSWORD` configuradas.
 
@@ -86,8 +86,8 @@ cd backend
 .\mvnw.cmd test
 ```
 
-Las pruebas usan H2 en memoria; PostgreSQL se mantiene como base de datos de ejecución. El esquema de pruebas se crea y elimina automáticamente. La configuración normal deja la gestión del esquema de PostgreSQL a las migraciones del proyecto.
+Las pruebas usan H2 en memoria e incluyen solicitudes HTTP a la aplicación completa: creación válida (`201`), entrada inválida (`400`), tipo de suelo desconocido (`400`), listado, detalle y parcela inexistente (`404`). Flyway administra el esquema; Hibernate no modifica automáticamente el esquema de PostgreSQL.
 
 ## Configuración
 
-Las credenciales de desarrollo se pueden cambiar en `.env`. No se deben usar estos valores de ejemplo en producción. La configuración JPA no crea ni modifica tablas automáticamente.
+Las credenciales de desarrollo se pueden cambiar en `.env`. No se deben usar estos valores de ejemplo en producción.
