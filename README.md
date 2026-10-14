@@ -1,6 +1,6 @@
 # Microservicio de parcelas
 
-Base del proyecto para el sistema de huertos urbanos. Incluye la entidad de persistencia `Parcel`, un repositorio JPA y un DTO de solicitud con validación y sanitización. Los endpoints y el manejo de errores del dominio todavía no están implementados.
+Base del proyecto para el sistema de huertos urbanos. Incluye la entidad de persistencia `Parcel`, un repositorio JPA, un DTO de solicitud con validación y sanitización, y manejo global de errores. Los endpoints de negocio todavía no están implementados.
 
 ## Tecnologías
 
@@ -27,7 +27,12 @@ backend/
     │   ├── java/com/barroso/parcelservice/
     │   │   ├── ParcelServiceApplication.java
     │   │   ├── dto/ParcelRequestDTO.java
-    │   │   ├── model/Parcel.java
+    │   │       ├── dto/ErrorResponseDto.java
+    │   │       ├── dto/FieldErrorDto.java
+    │   │       ├── exception/BadRequestException.java
+    │   │       ├── exception/GlobalExceptionHandler.java
+    │   │       ├── exception/ResourceNotFoundException.java
+    │   │       ├── model/Parcel.java
     │   │   ├── model/SoilType.java
     │   │   └── repository/ParcelRepository.java
     │   └── resources/application.properties
@@ -39,7 +44,7 @@ backend/
 compose.yaml
 ```
 
-La entidad y el repositorio se encuentran en `model/Parcel.java` y `repository/ParcelRepository.java`. `model/SoilType.java` limita el tipo de suelo a `ARCILLOSO`, `LIMOSO` o `ARENOSO`; `dto/ParcelRequestDTO.java` valida la entrada y limpia sus campos de texto.
+La entidad y el repositorio se encuentran en `model/Parcel.java` y `repository/ParcelRepository.java`. `model/SoilType.java` limita el tipo de suelo a `ARCILLOSO`, `LIMOSO` o `ARENOSO`; `dto/ParcelRequestDTO.java` valida la entrada y limpia sus campos de texto. `exception/GlobalExceptionHandler.java` centraliza respuestas JSON para validaciones, recursos inexistentes, errores de negocio, solicitudes mal formadas y errores inesperados.
 
 ## Ejecutar con Docker Compose
 
