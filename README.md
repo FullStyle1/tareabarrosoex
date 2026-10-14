@@ -1,6 +1,6 @@
 # Microservicio de parcelas
 
-Base del proyecto para el sistema de huertos urbanos. Incluye la entidad de persistencia `Parcel`, un repositorio JPA, un DTO de solicitud con validación y sanitización, y manejo global de errores. Los endpoints de negocio todavía no están implementados.
+Microservicio de parcelas para el sistema de huertos urbanos. Incluye persistencia JPA, validación y sanitización de entradas, manejo global de errores y API REST para registrar y consultar parcelas.
 
 ## Tecnologías
 
@@ -38,13 +38,22 @@ backend/
     │   └── resources/application.properties
     └── test/
         ├── java/com/barroso/parcelservice/ParcelServiceApplicationTests.java
+        ├── java/com/barroso/parcelservice/controller/ParcelControllerTest.java
         ├── java/com/barroso/parcelservice/dto/ParcelRequestDTOTest.java
+        ├── java/com/barroso/parcelservice/exception/GlobalExceptionHandlerTest.java
         ├── java/com/barroso/parcelservice/repository/ParcelRepositoryTest.java
+        ├── java/com/barroso/parcelservice/service/ParcelServiceImplTest.java
         └── resources/application.properties
 compose.yaml
 ```
 
-La entidad y el repositorio se encuentran en `model/Parcel.java` y `repository/ParcelRepository.java`. `model/SoilType.java` limita el tipo de suelo a `ARCILLOSO`, `LIMOSO` o `ARENOSO`; `dto/ParcelRequestDTO.java` valida la entrada y limpia sus campos de texto. `exception/GlobalExceptionHandler.java` centraliza respuestas JSON para validaciones, recursos inexistentes, errores de negocio, solicitudes mal formadas y errores inesperados.
+`ParcelService` mapea las solicitudes a entidades y las respuestas a DTOs. `ParcelController` expone los endpoints indicados abajo. `model/SoilType.java` limita el tipo de suelo a `ARCILLOSO`, `LIMOSO` o `ARENOSO`; `dto/ParcelRequestDTO.java` valida la entrada y limpia sus campos de texto. `exception/GlobalExceptionHandler.java` centraliza respuestas JSON para validaciones, recursos inexistentes, errores de negocio, solicitudes mal formadas y errores inesperados.
+
+## API REST
+
+- `POST /api/v1/parcels`: registra una parcela validada; devuelve `201 Created`, el recurso y el encabezado `Location`.
+- `GET /api/v1/parcels`: devuelve las parcelas registradas.
+- `GET /api/v1/parcels/{id}`: devuelve el detalle de una parcela; devuelve `404 Not Found` si no existe.
 
 ## Ejecutar con Docker Compose
 
@@ -55,7 +64,7 @@ Copy-Item .env.example .env
 docker compose up --build
 ```
 
-La aplicación queda en `http://localhost:8080` y PostgreSQL en `localhost:5432`. No hay rutas HTTP implementadas aún. Para detener los contenedores:
+La aplicación queda en `http://localhost:8080` y PostgreSQL en `localhost:5432`. Para detener los contenedores:
 
 ```powershell
 docker compose down
@@ -77,8 +86,8 @@ cd backend
 .\mvnw.cmd test
 ```
 
-Las pruebas usan H2 en memoria; PostgreSQL se mantiene como base de datos de ejecución. El esquema de pruebas se crea y elimina automáticamente y la configuración normal no modifica el esquema de PostgreSQL.
+Las pruebas usan H2 en memoria; PostgreSQL se mantiene como base de datos de ejecución. El esquema de pruebas se crea y elimina automáticamente. La configuración normal deja la gestión del esquema de PostgreSQL a las migraciones del proyecto.
 
 ## Configuración
 
-Las credenciales de desarrollo se pueden cambiar en `.env`. No se deben usar estos valores de ejemplo en producción. La configuración JPA no crea ni modifica tablas automáticamente; el esquema se definirá al agregar el modelo de dominio.
+Las credenciales de desarrollo se pueden cambiar en `.env`. No se deben usar estos valores de ejemplo en producción. La configuración JPA no crea ni modifica tablas automáticamente.
