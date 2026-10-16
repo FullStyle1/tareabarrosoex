@@ -86,7 +86,17 @@ cd backend
 .\mvnw.cmd test
 ```
 
-Las pruebas usan H2 en memoria e incluyen solicitudes HTTP a la aplicación completa: creación válida (`201`), entrada inválida (`400`), tipo de suelo desconocido (`400`), listado, detalle y parcela inexistente (`404`). Flyway administra el esquema; Hibernate no modifica automáticamente el esquema de PostgreSQL.
+Antes del primer arranque local, genera un certificado autofirmado de desarrollo desde la raíz del repositorio:
+
+```powershell
+keytool -genkeypair -alias parcel-service -keyalg RSA -keysize 2048 -storetype PKCS12 -keystore backend/src/main/resources/keystore.p12 -validity 365 -dname "CN=localhost, OU=Development, O=barroso, L=City, ST=State, C=MX" -ext "SAN=dns:localhost,ip:127.0.0.1" -storepass changeit -keypass changeit
+```
+
+El certificado local se ignora en Git. Luego de iniciarla, la API está disponible en `https://localhost:8443/api/v1/parcels`. Al ser autofirmado, usa `curl -k` para probarlo o importa el certificado en el almacén de confianza de tu cliente. La contraseña `changeit` es solo para desarrollo; configura `SERVER_SSL_KEY_STORE_PASSWORD` con el secreto apropiado en otros entornos. El servidor solo acepta TLS 1.2 y TLS 1.3; SSL está obsoleto.
+
+Docker Compose también expone HTTPS en el puerto `8443` (configurable con `APP_PORT`). Genera el certificado antes de construir la imagen con `docker compose up --build`.
+
+Las pruebas usan H2 en memoria e incluyen solicitudes HTTP a la aplicación completa: creación válida (`201`), entrada inválida (`400`), tipo de suelo desconocido (`400`), listado, detalle y parcela inexistente (`404`). El servidor de prueba desactiva TLS para mantener las solicitudes HTTP de `TestRestTemplate`. Flyway administra el esquema; Hibernate no modifica automáticamente el esquema de PostgreSQL.
 
 ## Configuración
 

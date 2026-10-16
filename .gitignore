@@ -3,6 +3,7 @@ target/
 *.class
 *.log
 .env
+**/keystore.p12
 .idea/
 .vscode/
 .DS_Store
